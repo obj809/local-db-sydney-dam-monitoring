@@ -1,4 +1,4 @@
-# scripts/local_db/local_db_seed_data.py
+# scripts/local_db_seed_data.py
 
 import os
 import mysql.connector
@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 def load_environment_variables():
     """Load environment variables from the .env file."""
-    dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+    dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
     if not os.path.exists(dotenv_path):
         print(f"Error: .env file not found at {dotenv_path}")
         exit(1)
@@ -96,7 +96,7 @@ def main():
 
     if db_connection:
         # Define the path to the SQL file
-        sql_file_path = os.path.join(os.path.dirname(__file__), '../../sql/example_data.sql')
+        sql_file_path = os.path.join(os.path.dirname(__file__), '../sql/example_data.sql')
 
         # Seed the database using the SQL file
         seed_database_from_file(db_connection, sql_file_path)

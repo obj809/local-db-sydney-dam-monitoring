@@ -1,4 +1,4 @@
-# scripts/local_db/local_db_create_schema.py
+# scripts/local_db_create_schema.py
 
 import os
 import sys
@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 def load_environment_variables():
     """Load environment variables from the .env file."""
-    dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+    dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
     if not os.path.exists(dotenv_path):
         print(f"Error: .env file not found at {dotenv_path}")
         sys.exit(1)
@@ -70,7 +70,7 @@ def create_schema():
 
         if connection.is_connected():
             print("Connected to the local database instance.")
-            sql_file_path = os.path.join(os.path.dirname(__file__), '../../sql/schema.sql')
+            sql_file_path = os.path.join(os.path.dirname(__file__), '../sql/schema.sql')
             execute_sql_file(connection, sql_file_path)
 
     except Error as e:
