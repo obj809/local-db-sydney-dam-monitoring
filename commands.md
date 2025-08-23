@@ -13,13 +13,13 @@ pip install -r requirements.txt
 
 ## Local DB
 
-python3 scripts/local_db/local_db_create_db.py
+python3 scripts/local_db_create_db.py
 
-python3 scripts/local_db/local_db_connect.py
+python3 scripts/local_db_connect.py
 
-python3 scripts/local_db/local_db_create_schema.py
+python3 scripts/local_db_create_schema.py
 
-python3 scripts/local_db/local_db_seed_data.py
+python3 scripts/local_db_seed_data.py
 
-python3 scripts/local_db/local_db_test_queries.py
+python3 scripts/local_db_test_queries.py
 
