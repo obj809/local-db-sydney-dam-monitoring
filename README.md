@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Schema Design and local provisioning of the local database for Sydney Dam Monitoring.
+Schema Design and local provisioning of the database for Sydney Dam Monitoring.
 
 ## SQL Schema
 ```SQL
