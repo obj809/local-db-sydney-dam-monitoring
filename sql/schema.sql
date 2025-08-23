@@ -1,11 +1,5 @@
-# Local Database Sydney Dam Monitoring
+-- sql/schema.sql
 
-## Project Overview
-
-Schema Design, SQL and Terraform provisioning of the local database for the Sydney Dam Monitoring Project
-
-## SQL Schema
-```SQL
 
 CREATE TABLE dams (
     dam_id VARCHAR(20) PRIMARY KEY,
@@ -83,6 +77,4 @@ CREATE TABLE dam_group_members (
     FOREIGN KEY (group_name) REFERENCES dam_groups(group_name),
     FOREIGN KEY (dam_id) REFERENCES dams(dam_id)
 );
-
-```
 
