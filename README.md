@@ -1,4 +1,4 @@
-# Local Database Sydney Dam Monitoring
+# Local Database Water Dashboard NSW
 
 ## Project Overview
 
