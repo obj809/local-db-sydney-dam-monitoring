@@ -12,8 +12,6 @@ SELECT * FROM overall_dam_analysis LIMIT 10;
 SELECT * FROM dam_groups LIMIT 10;
 SELECT * FROM dam_group_members LIMIT 10;
 
-
--- Join Tables to Analyze Relationships: Find all dams and their latest data
 SELECT 
     d.dam_id, 
     d.dam_name, 

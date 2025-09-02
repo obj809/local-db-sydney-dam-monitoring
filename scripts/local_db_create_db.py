@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 
 
 def load_environment_variables():
-    """Load environment variables from the .env file."""
     dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
     if not os.path.exists(dotenv_path):
         print(f"Error: .env file not found at {dotenv_path}")
@@ -16,7 +15,6 @@ def load_environment_variables():
 
 
 def get_db_config():
-    """Retrieve database configuration from environment variables."""
     db_config = {
         'host': os.getenv('LOCAL_DB_HOST', 'localhost'),
         'port': int(os.getenv('LOCAL_DB_PORT', 3306)),
@@ -24,7 +22,6 @@ def get_db_config():
         'password': os.getenv('LOCAL_DB_PASSWORD'),
     }
 
-    # Validate that required configurations are present
     missing = [key for key, value in db_config.items() if value is None]
     if missing:
         print(f"Error: Missing environment variables: {', '.join(missing)}")
@@ -34,7 +31,6 @@ def get_db_config():
 
 
 def create_database(db_name, db_config):
-    """Create a local MySQL database."""
     try:
         connection = mysql.connector.connect(
             host=db_config['host'],
@@ -45,7 +41,6 @@ def create_database(db_name, db_config):
         if connection.is_connected():
             print("Connected to MySQL Server.")
 
-            # Create the database
             cursor = connection.cursor()
             cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name};")
             print(f"Database '{db_name}' has been created or already exists.")
@@ -61,7 +56,6 @@ def create_database(db_name, db_config):
 
 
 def main():
-    """Main execution block to create the database."""
     load_environment_variables()
 
     db_config = get_db_config()

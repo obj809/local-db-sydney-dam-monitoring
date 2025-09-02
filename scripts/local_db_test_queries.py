@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 
 
 def load_environment_variables():
-    """Load environment variables from the .env file."""
     dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
     if not os.path.exists(dotenv_path):
         print(f"Error: .env file not found at {dotenv_path}")
@@ -15,7 +14,6 @@ def load_environment_variables():
 
 
 def get_db_config():
-    """Retrieve database configuration from environment variables."""
     db_config = {
         'host': os.getenv('LOCAL_DB_HOST', 'localhost'),
         'port': int(os.getenv('LOCAL_DB_PORT', 3306)),
@@ -24,7 +22,6 @@ def get_db_config():
         'password': os.getenv('LOCAL_DB_PASSWORD'),
     }
 
-    # Validate that required configurations are present
     missing = [key for key, value in db_config.items() if value is None]
     if missing:
         print(f"Error: Missing environment variables: {', '.join(missing)}")
@@ -34,7 +31,6 @@ def get_db_config():
 
 
 def connect_to_database(db_config):
-    """Establish a connection to the local MySQL database."""
     try:
         connection = mysql.connector.connect(
             host=db_config['host'],
@@ -51,25 +47,17 @@ def connect_to_database(db_config):
 
 
 def execute_queries(connection, sql_file_path):
-    """
-    Execute SQL queries from a file and print the results.
 
-    Args:
-        connection (mysql.connector.connection.MySQLConnection): The database connection.
-        sql_file_path (str): The path to the SQL file containing queries.
-    """
-    cursor = connection.cursor(dictionary=True)  # Use dictionary=True to get results as dict
+    cursor = connection.cursor(dictionary=True)
     try:
-        # Open and read the SQL file
+        
         with open(sql_file_path, 'r') as file:
             sql_script = file.read()
 
-        # Split the SQL script into individual queries
         sql_queries = sql_script.split(';')
 
-        # Execute each query and print results
         for index, query in enumerate(sql_queries):
-            if query.strip():  # Skip empty or whitespace-only queries
+            if query.strip():
                 print(f"\nExecuting Query {index + 1}:\n{query.strip()}")
                 cursor.execute(query)
                 results = cursor.fetchall()
@@ -90,24 +78,18 @@ def execute_queries(connection, sql_file_path):
 
 
 def main():
-    """Main execution block to execute SQL queries."""
-    # Load environment variables
+    
     load_environment_variables()
 
-    # Get database configuration
     db_config = get_db_config()
 
-    # Connect to the database
     db_connection = connect_to_database(db_config)
 
     if db_connection:
-        # Define the path to the SQL file
         sql_file_path = os.path.join(os.path.dirname(__file__), '../sql/example_queries.sql')
 
-        # Execute queries and print the results
         execute_queries(db_connection, sql_file_path)
 
-        # Close the connection
         db_connection.close()
         print("Database connection closed.")
 

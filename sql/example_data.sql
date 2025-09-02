@@ -48,7 +48,6 @@ INSERT INTO dam_groups (group_name) VALUES
     ('greatest_released');
 
 
--- Sydney Dams
 INSERT INTO dam_group_members (group_name, dam_id) VALUES
     ('sydney_dams', '212232'),
     ('sydney_dams', '212220'),
@@ -59,7 +58,6 @@ INSERT INTO dam_group_members (group_name, dam_id) VALUES
     ('sydney_dams', '212212'),
     ('sydney_dams', '215235');
 
--- Popular Dams
 INSERT INTO dam_group_members (group_name, dam_id) VALUES
     ('popular_dams', '212243'),
     ('popular_dams', '212232'),
@@ -70,7 +68,6 @@ INSERT INTO dam_group_members (group_name, dam_id) VALUES
     ('popular_dams', '215212'),
     ('popular_dams', '213240');
 
--- Large Dams
 INSERT INTO dam_group_members (group_name, dam_id) VALUES
     ('large_dams', '212243'),
     ('large_dams', '410102'),
@@ -81,7 +78,6 @@ INSERT INTO dam_group_members (group_name, dam_id) VALUES
     ('large_dams', '210097'),
     ('large_dams', '419080');
 
--- Small Dams
 INSERT INTO dam_group_members (group_name, dam_id) VALUES
     ('small_dams', '219033'),
     ('small_dams', '215235'),
@@ -92,7 +88,6 @@ INSERT INTO dam_group_members (group_name, dam_id) VALUES
     ('small_dams', '210102'),
     ('small_dams', '412107');
 
--- Greatest Released Dams
 INSERT INTO dam_group_members (group_name, dam_id) VALUES
     ('greatest_released', '410102'),
     ('greatest_released', '410131'),
@@ -143,49 +138,41 @@ INSERT INTO latest_data (dam_id, dam_name, date, storage_volume, percentage_full
     ('42510037', 'Lake Copi Hollow', '2024-11-25', 7700.000, 99.90, 700.000, 400.200);
 
 
--- Toonumbar Dam (203042)
 INSERT INTO dam_resources (dam_id, date, storage_volume, percentage_full, storage_inflow, storage_release) VALUES
     ('203042', '2023-10-01', 10500.000, 95.00, 480.500, 300.300),
     ('203042', '2023-11-01', 10600.000, 96.00, 500.500, 310.300),
     ('203042', '2023-12-01', 10700.000, 97.00, 520.500, 320.300);
 
--- Glenbawn Dam (210097)
 INSERT INTO dam_resources (dam_id, date, storage_volume, percentage_full, storage_inflow, storage_release) VALUES
     ('210097', '2023-10-01', 740000.000, 95.00, 2200.200, 1500.000),
     ('210097', '2023-11-01', 745000.000, 96.00, 2250.200, 1550.000),
     ('210097', '2023-12-01', 750000.000, 97.00, 2300.200, 1600.000);
 
--- Lostock Dam (210102)
 INSERT INTO dam_resources (dam_id, date, storage_volume, percentage_full, storage_inflow, storage_release) VALUES
     ('210102', '2023-10-01', 19500.000, 96.00, 600.000, 350.800),
     ('210102', '2023-11-01', 19800.000, 97.00, 610.000, 360.800),
     ('210102', '2023-12-01', 20000.000, 98.00, 620.000, 370.800);
 
--- Warragamba Dam (212243)
 INSERT INTO dam_resources (dam_id, date, storage_volume, percentage_full, storage_inflow, storage_release) VALUES
     ('212243', '2023-10-01', 2064000.000, 98.00, 2500.700, 1800.600),
     ('212243', '2023-11-01', 2065000.000, 99.00, 2520.700, 1850.600),
     ('212243', '2023-12-01', 2064680.000, 100.00, 2550.700, 1900.600);
 
--- Blowering Dam (410102)
 INSERT INTO dam_resources (dam_id, date, storage_volume, percentage_full, storage_inflow, storage_release) VALUES
     ('410102', '2023-10-01', 1600000.000, 98.00, 2000.500, 1500.300),
     ('410102', '2023-11-01', 1602000.000, 98.50, 2010.500, 1510.300),
     ('410102', '2023-12-01', 1604010.000, 99.00, 2020.500, 1520.300);
 
--- Burrinjuck Dam (410131)
 INSERT INTO dam_resources (dam_id, date, storage_volume, percentage_full, storage_inflow, storage_release) VALUES
     ('410131', '2023-10-01', 1024000.000, 98.00, 2050.800, 1520.300),
     ('410131', '2023-11-01', 1025000.000, 98.50, 2060.800, 1530.300),
     ('410131', '2023-12-01', 1024750.000, 99.00, 2070.800, 1540.300);
 
--- Lake Wyangala (412010)
 INSERT INTO dam_resources (dam_id, date, storage_volume, percentage_full, storage_inflow, storage_release) VALUES
     ('412010', '2023-10-01', 1217000.000, 98.00, 2100.600, 1550.500),
     ('412010', '2023-11-01', 1218000.000, 98.50, 2110.600, 1560.500),
     ('412010', '2023-12-01', 1217035.000, 99.00, 2120.600, 1570.500);
 
--- Copeham Dam (42510037)
 INSERT INTO dam_resources (dam_id, date, storage_volume, percentage_full, storage_inflow, storage_release) VALUES
     ('42510037', '2023-10-01', 7600.000, 95.00, 700.000, 400.200),
     ('42510037', '2023-11-01', 7650.000, 96.00, 710.000, 410.200),
@@ -208,31 +195,22 @@ INSERT INTO specific_dam_analysis (
     avg_storage_release_5_years,
     avg_storage_release_20_years
 ) VALUES
-    -- Toonumbar Dam Analysis on 2024-11-01
     ('203042', '2024-11-01', 10500.000, 10300.000, 10000.000, 97.00, 95.00, 93.00, 500.500, 480.500, 460.500, 300.300, 290.300, 280.300),
 
-    -- Glenbawn Dam Analysis on 2024-11-01
     ('210097', '2024-11-01', 730000.000, 720000.000, 700000.000, 97.45, 95.00, 93.00, 2200.200, 2100.200, 2000.200, 1600.000, 1500.000, 1400.000),
 
-    -- Lostock Dam Analysis on 2024-11-01
     ('210102', '2024-11-01', 19500.000, 19000.000, 18500.000, 98.77, 96.00, 94.00, 600.000, 580.000, 560.000, 350.800, 340.800, 330.800),
 
-    -- Glennies Creek Dam Analysis on 2024-11-01
     ('210117', '2024-11-01', 282303.000, 275000.000, 260000.000, 99.50, 97.00, 95.00, 1800.500, 1750.500, 1700.500, 1300.300, 1250.300, 1200.300),
 
-    -- Warragamba Dam Analysis on 2024-11-01
     ('212243', '2024-11-01', 2064680.000, 2050000.000, 2000000.000, 100.00, 98.00, 96.00, 2500.700, 2400.700, 2300.700, 1800.600, 1700.600, 1600.600),
 
-    -- Blowering Dam Analysis on 2024-11-01
     ('410102', '2024-11-01', 1603000.000, 1580000.000, 1550000.000, 99.90, 98.00, 96.00, 2000.500, 1950.500, 1900.500, 1500.300, 1450.300, 1400.300),
 
-    -- Burrinjuck Dam Analysis on 2024-11-01
     ('410131', '2024-11-01', 1024750.000, 1010000.000, 990000.000, 99.00, 98.00, 97.00, 2070.800, 2050.800, 2030.800, 1540.300, 1520.300, 1500.300),
 
-    -- Lake Wyangala Analysis on 2024-11-01
     ('412010', '2024-11-01', 1217035.000, 1200000.000, 1180000.000, 99.00, 98.00, 96.00, 2120.600, 2100.600, 2080.600, 1570.500, 1550.500, 1530.500),
 
-    -- Lake Cargelligo Analysis on 2024-11-01
     ('412107', '2024-11-01', 30000.000, 29500.000, 29000.000, 99.80, 98.50, 97.00, 620.100, 610.100, 600.100, 360.900, 350.900, 340.900);
 
 INSERT INTO overall_dam_analysis (

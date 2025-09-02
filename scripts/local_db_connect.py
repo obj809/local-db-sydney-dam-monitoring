@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 
 
 def load_environment_variables():
-    """Load environment variables from the .env file."""
     dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
     if not os.path.exists(dotenv_path):
         print(f"Error: .env file not found at {dotenv_path}")
@@ -17,7 +16,6 @@ def load_environment_variables():
 
 
 def get_db_config():
-    """Retrieve database configuration from environment variables."""
     db_config = {
         'host': os.getenv('LOCAL_DB_HOST', 'localhost'),
         'port': int(os.getenv('LOCAL_DB_PORT', 3306)),
@@ -26,7 +24,6 @@ def get_db_config():
         'password': os.getenv('LOCAL_DB_PASSWORD'),
     }
 
-    # Validate that all required configurations are present
     missing = [key for key, value in db_config.items() if value is None]
     if missing:
         print(f"Error: Missing environment variables: {', '.join(missing)}")
@@ -36,7 +33,6 @@ def get_db_config():
 
 
 def test_connection(db_config):
-    """Test the connection to the local MySQL database."""
     try:
         connection = mysql.connector.connect(
             host=db_config['host'],
@@ -64,7 +60,6 @@ def test_connection(db_config):
 
 
 def main():
-    """Main execution block to test the local MySQL database connection."""
     load_environment_variables()
     db_config = get_db_config()
     test_connection(db_config)
