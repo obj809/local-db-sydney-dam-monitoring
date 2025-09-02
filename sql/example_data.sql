@@ -235,4 +235,24 @@ INSERT INTO specific_dam_analysis (
     -- Lake Cargelligo Analysis on 2024-11-01
     ('412107', '2024-11-01', 30000.000, 29500.000, 29000.000, 99.80, 98.50, 97.00, 620.100, 610.100, 600.100, 360.900, 350.900, 340.900);
 
-
+INSERT INTO overall_dam_analysis (
+    analysis_date,
+    avg_storage_volume_12_months,
+    avg_storage_volume_5_years,
+    avg_storage_volume_20_years,
+    avg_percentage_full_12_months,
+    avg_percentage_full_5_years,
+    avg_percentage_full_20_years,
+    avg_storage_inflow_12_months,
+    avg_storage_inflow_5_years,
+    avg_storage_inflow_20_years,
+    avg_storage_release_12_months,
+    avg_storage_release_5_years,
+    avg_storage_release_20_years
+) VALUES
+    ('2024-11-25', 
+        500000.000, 480000.000, 450000.000,
+        98.50, 96.00, 94.00,
+        1500.000, 1400.000, 1300.000,
+        1100.000, 1000.000, 900.000
+    );

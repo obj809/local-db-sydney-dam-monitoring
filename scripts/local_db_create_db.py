@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 def load_environment_variables():
     """Load environment variables from the .env file."""
-    dotenv_path = os.path.join(os.path.dirname(__file__), '/../.env')
+    dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
     if not os.path.exists(dotenv_path):
         print(f"Error: .env file not found at {dotenv_path}")
         exit(1)
@@ -64,11 +64,9 @@ def main():
     """Main execution block to create the database."""
     load_environment_variables()
 
-    # Get database configuration and the target database name
     db_config = get_db_config()
-    db_name = os.getenv('LOCAL_DB_NAME', 'sydney_dam_monitoring_local')
+    db_name = os.getenv('LOCAL_DB_NAME', 'water_dashboard_nsw_local')
 
-    # Create the database
     create_database(db_name, db_config)
 
 

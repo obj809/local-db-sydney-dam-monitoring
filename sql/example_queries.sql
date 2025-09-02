@@ -24,4 +24,4 @@ WHERE dam_id = '210097' AND analysis_date = '2024-11-01';
 
 -- Retrieve Overall Dam Analysis on '2024-11-01':
 SELECT * FROM overall_dam_analysis
-WHERE analysis_date = '2024-11-01';
+WHERE analysis_date = '2024-11-25';
