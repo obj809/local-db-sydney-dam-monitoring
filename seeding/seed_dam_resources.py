@@ -1,23 +1,11 @@
 #!/usr/bin/env python3
-# seeding/seed_dam_resources.py
+# seeding/seed_dam_resources.py  (REPLACE CONTENTS)
 
 import os
 import datetime as dt
 from dateutil.relativedelta import relativedelta
 import mysql.connector
 from dotenv import load_dotenv
-
-# Generate 24 monthly points for each dam_id below (past 24 months)
-DAM_FULL = {
-    "212243": 2064680,  # Warragamba
-    "212232": 97190,    # Cataract
-    "212220": 93790,    # Cordeaux
-    "410102": 1604010,  # Blowering
-    "410131": 1024750,  # Burrinjuck
-    "421078": 1154270,  # Burrendong
-    "210097": 748827,   # Glenbawn
-    "419080": 393840,   # Split Rock
-}
 
 def cfg():
     load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
@@ -29,22 +17,28 @@ def cfg():
         database=os.getenv("LOCAL_DB_NAME"),
     )
 
-def month_ends(n_months=24):
-    # last day of each month for the last n_months, ascending
+def month_starts(n_months=24):
+    # first day of each of the last n months (ascending)
     today = dt.date.today().replace(day=1)
     months = [(today - relativedelta(months=i)) for i in range(n_months, 0, -1)]
-    # use first-of-month to simplify (matches your earlier sample style)
     return [d.isoformat() for d in months]
 
 def main():
-    conn = mysql.connector.connect(**cfg())
+    conf = cfg()
+    conn = mysql.connector.connect(**conf)
     cur = conn.cursor()
 
-    dates = month_ends(24)
+    # 1) get all dams (id + capacity)
+    cur.execute("SELECT dam_id, COALESCE(full_volume, 0) FROM dams ORDER BY dam_id;")
+    dams = cur.fetchall()
+    if not dams:
+        print("seed_dam_resources.py: No dams found. Seed 'dams' first.")
+        cur.close(); conn.close(); return
 
-    # For idempotency without schema changes, delete only rows we’re about to re-insert.
-    # This stays within the same table and avoids touching other tables.
-    for dam_id in DAM_FULL:
+    dates = month_starts(24)
+
+    # 2) delete any overlapping rows we’re about to reinsert (idempotent)
+    for (dam_id, _) in dams:
         cur.execute(
             """
             DELETE FROM dam_resources
@@ -53,26 +47,28 @@ def main():
             (dam_id, dates[0], dates[-1])
         )
 
+    # 3) synthesize monthly points for ALL dams
     insert_sql = """
     INSERT INTO dam_resources
       (dam_id, date, storage_volume, percentage_full, storage_inflow, storage_release)
     VALUES (%s,%s,%s,%s,%s,%s);
     """
-
     rows = []
-    for dam_id, full_vol in DAM_FULL.items():
-        base = 92.0 + (hash(dam_id) % 40) * 0.1  # ~92.0–96.0%
-        for i, d in enumerate(dates):
-            # gentle seasonal wiggle
-            pct = min(100.0, max(70.0, base + ((i % 12) - 6) * 0.3))
-            storage = round(full_vol * (pct / 100.0), 3)
-            inflow = round(1000 + (i * 20) + (hash(d) % 200) * 0.1, 3)
-            release = round(inflow * (0.6 + (i % 5) * 0.05), 3)
+    for i, (dam_id, full_vol) in enumerate(dams):
+        capacity = int(full_vol) if int(full_vol) > 0 else (200_000 + 10_000 * i)
+        # deterministic baseline per dam
+        base_pct = 90.0 + ((i % 20) * 0.5)  # ~90–99.5%
+        for m, d in enumerate(dates):
+            # gentle seasonal wiggle by month index
+            pct = min(100.0, max(60.0, base_pct + ((m % 12) - 6) * 0.35))
+            storage = round(capacity * (pct / 100.0), 3)
+            inflow = round(900 + (i * 15) + (m * 20), 3)
+            release = round(inflow * 0.7, 3)
             rows.append((dam_id, d, storage, pct, inflow, release))
 
     cur.executemany(insert_sql, rows)
     conn.commit()
-    print(f"seed_dam_resources.py: inserted {cur.rowcount} rows")
+    print(f"seed_dam_resources.py: inserted {cur.rowcount} rows across {len(dams)} dams x {len(dates)} months.")
     cur.close(); conn.close()
 
 if __name__ == "__main__":
