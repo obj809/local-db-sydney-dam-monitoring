@@ -1,4 +1,10 @@
 # scripts/local_db_connect.py
+"""
+Simple MySQL connectivity check.
+- Loads credentials from ../.env
+- Connects to the database
+- Prints server version and current DB
+"""
 
 import os
 import sys
@@ -7,62 +13,51 @@ from mysql.connector import Error
 from dotenv import load_dotenv
 
 
-def load_environment_variables():
-    dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
+def load_env():
+    dotenv_path = os.path.join(os.path.dirname(__file__), "../.env")
     if not os.path.exists(dotenv_path):
         print(f"Error: .env file not found at {dotenv_path}")
         sys.exit(1)
     load_dotenv(dotenv_path)
 
 
-def get_db_config():
-    db_config = {
-        'host': os.getenv('LOCAL_DB_HOST', 'localhost'),
-        'port': int(os.getenv('LOCAL_DB_PORT', 3306)),
-        'database': os.getenv('LOCAL_DB_NAME'),
-        'user': os.getenv('LOCAL_DB_USER'),
-        'password': os.getenv('LOCAL_DB_PASSWORD'),
+def get_config():
+    cfg = {
+        "host": os.getenv("LOCAL_DB_HOST", "localhost"),
+        "port": int(os.getenv("LOCAL_DB_PORT", 3306)),
+        "database": os.getenv("LOCAL_DB_NAME"),
+        "user": os.getenv("LOCAL_DB_USER"),
+        "password": os.getenv("LOCAL_DB_PASSWORD"),
     }
-
-    missing = [key for key, value in db_config.items() if value is None]
+    missing = [k for k, v in cfg.items() if v in (None, "")]
     if missing:
-        print(f"Error: Missing environment variables: {', '.join(missing)}")
+        print(f"Error: Missing env vars: {', '.join(missing)}")
         sys.exit(1)
+    return cfg
 
-    return db_config
 
-
-def test_connection(db_config):
+def test_connection(cfg):
     try:
-        connection = mysql.connector.connect(
-            host=db_config['host'],
-            port=db_config['port'],
-            database=db_config['database'],
-            user=db_config['user'],
-            password=db_config['password']
-        )
-
-        if connection.is_connected():
-            db_info = connection.get_server_info()
-            print(f"Connected to MySQL Server version {db_info}")
-            cursor = connection.cursor()
-            cursor.execute("SELECT DATABASE();")
-            record = cursor.fetchone()
-            print(f"You're connected to database: {record[0]}")
-            cursor.close()
-
+        conn = mysql.connector.connect(**cfg)
+        if conn.is_connected():
+            print(f"✅ Connected to MySQL {conn.get_server_info()}")
+            cur = conn.cursor()
+            cur.execute("SELECT DATABASE();")
+            print(f"Using database: {cur.fetchone()[0]}")
+            cur.close()
     except Error as e:
-        print(f"Error while connecting to MySQL: {e}")
+        print(f"❌ Connection error: {e}")
+        sys.exit(1)
     finally:
-        if 'connection' in locals() and connection.is_connected():
-            connection.close()
-            print("MySQL connection is closed")
+        if "conn" in locals() and conn.is_connected():
+            conn.close()
+            print("MySQL connection closed.")
 
 
 def main():
-    load_environment_variables()
-    db_config = get_db_config()
-    test_connection(db_config)
+    load_env()
+    cfg = get_config()
+    test_connection(cfg)
 
 
 if __name__ == "__main__":

@@ -14,7 +14,7 @@ import os
 import sys
 import argparse
 import datetime as dt
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 import mysql.connector
 from mysql.connector import Error
@@ -70,13 +70,14 @@ def connect(db_config: dict):
 
 
 def list_tables(conn, schema: str, only: Optional[List[str]] = None) -> List[str]:
+    """Return base tables in the schema; if `only` is provided, filter to that set (case-insensitive)."""
     q = "SHOW FULL TABLES WHERE Table_type='BASE TABLE';"
     cur = conn.cursor()
     cur.execute(q)
     rows = cur.fetchall()
     cur.close()
 
-    all_tables = [r[0] for r in rows]
+    all_tables = sorted([r[0] for r in rows], key=str.lower)
 
     if only:
         wanted_lower = {t.lower() for t in only}
@@ -89,18 +90,47 @@ def list_tables(conn, schema: str, only: Optional[List[str]] = None) -> List[str
     return all_tables
 
 
+def _safe_sheet_name(name: str, existing: Dict[str, int]) -> str:
+    """
+    Make a valid, unique Excel sheet name:
+    - Max 31 chars
+    - Remove/replace invalid characters : \\ / ? * [ ]
+    - Ensure uniqueness by appending a counter if needed
+    """
+    invalid = set(r':\/?*[]')
+    cleaned = ''.join(ch for ch in name if ch not in invalid)
+    cleaned = cleaned.strip()
+    if not cleaned:
+        cleaned = "Sheet"
+
+    # Excel 31-char limit
+    base = cleaned[:31]
+
+    candidate = base
+    # Ensure uniqueness
+    while candidate.lower() in existing:
+        existing[base.lower()] = existing.get(base.lower(), 0) + 1
+        suffix = f"_{existing[base.lower()]}"
+        candidate = (base[: (31 - len(suffix))] + suffix)
+    existing[candidate.lower()] = 1
+    return candidate
+
+
 def export_tables_to_excel(conn, tables: List[str], out_path: str) -> None:
     print(f"Exporting {len(tables)} table(s) to: {out_path}")
+    existing_sheet_names: Dict[str, int] = {}
     with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
         for t in tables:
             try:
                 df = pd.read_sql(f"SELECT * FROM `{t}`;", conn)
-                sheet_name = (t[:31]) if len(t) > 31 else t
+                sheet_name = _safe_sheet_name(t, existing_sheet_names)
                 if df.empty:
+                    # still create a sheet so you can see the structure
                     pd.DataFrame(columns=df.columns).to_excel(writer, index=False, sheet_name=sheet_name)
+                    print(f"  ✓ {t} (0 rows)")
                 else:
                     df.to_excel(writer, index=False, sheet_name=sheet_name)
-                print(f"  ✓ {t} ({len(df)} rows)")
+                    print(f"  ✓ {t} ({len(df)} rows)")
             except Exception as e:
                 print(f"  ✗ {t} — error: {e}")
     print("Done.")

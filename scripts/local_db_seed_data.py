@@ -1,89 +1,65 @@
 # scripts/local_db_seed_data.py
+"""
+Run all seeding scripts in order (parents -> children).
+
+Order:
+  1) seeding/seed_dams.py
+  2) seeding/seed_dam_groups.py
+  3) seeding/seed_dam_group_members.py
+  4) seeding/seed_dam_resources.py
+  5) seeding/seed_latest_data.py
+  6) seeding/seed_specific_dam_analysis.py
+  7) seeding/seed_overall_dam_analysis.py
+"""
 
 import os
-import mysql.connector
-from dotenv import load_dotenv
+import sys
+import subprocess
+from typing import List
 
+try:
+    from dotenv import load_dotenv  # optional
+except ImportError:
+    load_dotenv = None
 
-def load_environment_variables():
-    dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
-    if not os.path.exists(dotenv_path):
-        print(f"Error: .env file not found at {dotenv_path}")
-        exit(1)
-    load_dotenv(dotenv_path)
+SEEDING_SCRIPTS: List[str] = [
+    "seeding/seed_dams.py",
+    "seeding/seed_dam_groups.py",
+    "seeding/seed_dam_group_members.py",
+    "seeding/seed_dam_resources.py",
+    "seeding/seed_latest_data.py",
+    "seeding/seed_specific_dam_analysis.py",
+    "seeding/seed_overall_dam_analysis.py",
+]
 
+def root_dir() -> str:
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-def get_db_config():
-    db_config = {
-        'host': os.getenv('LOCAL_DB_HOST', 'localhost'),
-        'port': int(os.getenv('LOCAL_DB_PORT', 3306)),
-        'database': os.getenv('LOCAL_DB_NAME'),
-        'user': os.getenv('LOCAL_DB_USER'),
-        'password': os.getenv('LOCAL_DB_PASSWORD'),
-    }
+def main() -> None:
+    # load .env so each script prints which DB it's hitting
+    if load_dotenv:
+        env_path = os.path.join(root_dir(), ".env")
+        if os.path.exists(env_path):
+            load_dotenv(env_path)
+    db = os.getenv("LOCAL_DB_NAME", "(unknown)")
+    host = os.getenv("LOCAL_DB_HOST", "127.0.0.1")
+    port = os.getenv("LOCAL_DB_PORT", "3306")
+    print(f"Target DB: {db} at {host}:{port}")
 
-    missing = [key for key, value in db_config.items() if value is None]
-    if missing:
-        print(f"Error: Missing environment variables: {', '.join(missing)}")
-        exit(1)
+    # run each script in order
+    for rel_path in SEEDING_SCRIPTS:
+        full_path = os.path.join(root_dir(), rel_path)
+        if not os.path.isfile(full_path):
+            print(f"❌ Missing: {rel_path}")
+            sys.exit(1)
 
-    return db_config
+        print(f"\n=== Running {rel_path} ===")
+        result = subprocess.run([sys.executable, full_path], cwd=root_dir())
+        if result.returncode != 0:
+            print(f"❌ {rel_path} failed with exit code {result.returncode}")
+            sys.exit(result.returncode)
 
-
-def connect_to_database(db_config):
-    try:
-        connection = mysql.connector.connect(
-            host=db_config['host'],
-            port=db_config['port'],
-            database=db_config['database'],
-            user=db_config['user'],
-            password=db_config['password']
-        )
-        print("Connection to the local database was successful!")
-        return connection
-    except mysql.connector.Error as err:
-        print(f"Error: {err}")
-        return None
-
-
-def seed_database_from_file(connection, sql_file_path):
-    cursor = connection.cursor()
-    try:
-        with open(sql_file_path, 'r') as file:
-            sql_script = file.read()
-
-        sql_commands = sql_script.split(';')
-        for command in sql_commands:
-            if command.strip():
-                cursor.execute(command)
-        
-        connection.commit()
-        print(f"Data from {sql_file_path} has been seeded into the database successfully!")
-
-    except FileNotFoundError:
-        print(f"Error: The file {sql_file_path} does not exist.")
-    except mysql.connector.Error as err:
-        print(f"Error while seeding data: {err}")
-    finally:
-        cursor.close()
-
-
-def main():
-
-    load_environment_variables()
-
-    db_config = get_db_config()
-
-    db_connection = connect_to_database(db_config)
-
-    if db_connection:
-        sql_file_path = os.path.join(os.path.dirname(__file__), '../sql/example_data.sql')
-
-        seed_database_from_file(db_connection, sql_file_path)
-
-        db_connection.close()
-        print("Database connection closed.")
-
+    print("\n✅ Seeding completed successfully.")
 
 if __name__ == "__main__":
     main()
