@@ -1,9 +1,5 @@
 # Local Database Water Dashboard NSW
 
-## Project Overview
-
-Schema Design and local provisioning of the database for Sydney Dam Monitoring.
-
 ## SQL Schema
 ```SQL
 
