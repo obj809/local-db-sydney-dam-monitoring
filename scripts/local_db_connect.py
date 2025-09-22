@@ -1,10 +1,4 @@
 # scripts/local_db_connect.py
-"""
-Simple MySQL connectivity check.
-- Loads credentials from ../.env
-- Connects to the database
-- Prints server version and current DB
-"""
 
 import os
 import sys

@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# seeding/seed_dam_resources.py  (REPLACE CONTENTS)
+# seeding/seed_dam_resources.py
 
 import os
 import datetime as dt
@@ -18,7 +17,6 @@ def cfg():
     )
 
 def month_starts(n_months=24):
-    # first day of each of the last n months (ascending)
     today = dt.date.today().replace(day=1)
     months = [(today - relativedelta(months=i)) for i in range(n_months, 0, -1)]
     return [d.isoformat() for d in months]
@@ -28,7 +26,6 @@ def main():
     conn = mysql.connector.connect(**conf)
     cur = conn.cursor()
 
-    # 1) get all dams (id + capacity)
     cur.execute("SELECT dam_id, COALESCE(full_volume, 0) FROM dams ORDER BY dam_id;")
     dams = cur.fetchall()
     if not dams:
@@ -37,7 +34,6 @@ def main():
 
     dates = month_starts(24)
 
-    # 2) delete any overlapping rows we’re about to reinsert (idempotent)
     for (dam_id, _) in dams:
         cur.execute(
             """
@@ -47,7 +43,6 @@ def main():
             (dam_id, dates[0], dates[-1])
         )
 
-    # 3) synthesize monthly points for ALL dams
     insert_sql = """
     INSERT INTO dam_resources
       (dam_id, date, storage_volume, percentage_full, storage_inflow, storage_release)
@@ -56,10 +51,8 @@ def main():
     rows = []
     for i, (dam_id, full_vol) in enumerate(dams):
         capacity = int(full_vol) if int(full_vol) > 0 else (200_000 + 10_000 * i)
-        # deterministic baseline per dam
-        base_pct = 90.0 + ((i % 20) * 0.5)  # ~90–99.5%
+        base_pct = 90.0 + ((i % 20) * 0.5)
         for m, d in enumerate(dates):
-            # gentle seasonal wiggle by month index
             pct = min(100.0, max(60.0, base_pct + ((m % 12) - 6) * 0.35))
             storage = round(capacity * (pct / 100.0), 3)
             inflow = round(900 + (i * 15) + (m * 20), 3)

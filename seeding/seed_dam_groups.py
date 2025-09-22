@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # seeding/seed_dam_groups.py
 
 import os

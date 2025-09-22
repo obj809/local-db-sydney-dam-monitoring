@@ -1,4 +1,5 @@
 # scripts/local_db_test_queries.py
+
 import os
 import sys
 import mysql.connector

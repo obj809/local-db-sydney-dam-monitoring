@@ -1,14 +1,4 @@
-# File: scripts/local_export_mysql_to_excel.py
-"""
-Export all (or selected) MySQL tables to an Excel workbook in ../spreadsheets.
-- Loads DB creds from .env (same style as your other scripts)
-- One sheet per table
-- Filename is date-stamped: water_dashboard_nsw_<YYYYMMDD_HHMM>.xlsx
-
-Usage:
-    python scripts/local_export_mysql_to_excel.py
-    python scripts/local_export_mysql_to_excel.py --tables dams latest_data
-"""
+# scripts/local_export_mysql_to_excel.py
 
 import os
 import sys

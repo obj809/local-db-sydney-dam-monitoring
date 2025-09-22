@@ -1,20 +1,4 @@
-#!/usr/bin/env python3
 # seeding/seed_latest_data.py
-"""
-Make sure every dam has a row in latest_data with simple fabricated values.
-
-Rules (easy to read/change):
-- percentage_full cycles: 92, 93, …, 100, 92, …
-- inflow grows by +100 per dam (starting at 1000)
-- release = 70% of inflow (rounded)
-- storage_volume = percentage_full% of capacity
-- if full_volume is NULL/0, we guess a capacity (200_000 + 10_000 * i)
-
-This script:
-1) SELECTs all dams (dam_id, dam_name, full_volume)
-2) Builds rows using the rules above
-3) UPSERTs into latest_data on (dam_id)
-"""
 
 import os
 import datetime as dt
@@ -38,29 +22,23 @@ def main():
     conn = mysql.connector.connect(**cfg)
     cur = conn.cursor()
 
-    # 1) fetch dams
     cur.execute("SELECT dam_id, dam_name, COALESCE(full_volume, 0) FROM dams ORDER BY dam_id;")
     dams = cur.fetchall()
     if not dams:
         print("seed_latest_data.py: No dams found. Seed 'dams' first.")
         cur.close(); conn.close(); return
 
-    # 2) fabricate rows
     rows = []
     for i, (dam_id, dam_name, full_volume) in enumerate(dams):
-        # percentage_full cycles 92..100 then repeats
-        pct = 92 + (i % 9)  # 92–100
-        # inflow is simple linear growth per dam
+        pct = 92 + (i % 9)
         inflow = 1000 + 100 * i
         release = round(inflow * 0.70, 3)
 
-        # capacity fallback if missing
         cap = int(full_volume) if int(full_volume) > 0 else (200_000 + 10_000 * i)
         storage = round(cap * (pct / 100.0), 3)
 
         rows.append((dam_id, dam_name, today, storage, float(pct), float(inflow), release))
 
-    # 3) upsert
     sql = """
     INSERT INTO latest_data
       (dam_id, dam_name, date, storage_volume, percentage_full, storage_inflow, storage_release)

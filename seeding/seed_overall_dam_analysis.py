@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # seeding/seed_overall_dam_analysis.py
 
 import os
@@ -50,7 +49,6 @@ def main():
         avg_storage_release_20_years=VALUES(avg_storage_release_20_years);
     """
 
-    # Plausible system-wide means (synthetic)
     v12 = 500000.000
     v5  = 480000.000
     v20 = 450000.000

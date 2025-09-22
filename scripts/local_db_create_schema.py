@@ -1,15 +1,4 @@
 # scripts/local_db_create_schema.py
-"""
-Create (overwrite) the database schema.
-
-Behavior:
-- Loads DB creds from ../.env
-- ALWAYS drops all existing tables (FK-safe)
-- Applies ../sql/schema.sql
-
-Usage:
-  python scripts/local_db_create_schema.py
-"""
 
 import os
 import sys

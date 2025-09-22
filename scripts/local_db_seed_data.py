@@ -1,16 +1,4 @@
 # scripts/local_db_seed_data.py
-"""
-Run all seeding scripts in order (parents -> children).
-
-Order:
-  1) seeding/seed_dams.py
-  2) seeding/seed_dam_groups.py
-  3) seeding/seed_dam_group_members.py
-  4) seeding/seed_dam_resources.py
-  5) seeding/seed_latest_data.py
-  6) seeding/seed_specific_dam_analysis.py
-  7) seeding/seed_overall_dam_analysis.py
-"""
 
 import os
 import sys
